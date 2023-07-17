@@ -4,6 +4,7 @@ use std::net::TcpStream;
 use crate::models::message::Message;
 use crate::models::request::message_to_http_request;
 
+#[allow(dead_code)]
 #[derive(Debug)]
 pub struct Publisher<T> {
     pub topic_name: String,

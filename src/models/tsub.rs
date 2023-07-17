@@ -8,15 +8,15 @@ use crate::models::message::Message;
 use crate::models::request::{message_to_http_request, OK_HTTP_STATUS, single_request_to_string};
 
 #[derive(Debug)]
-pub struct Subscriber<T> where T: MessageTrait + DeserializeOwned {
+pub struct Subscriber<T, R> where T: MessageTrait + DeserializeOwned {
     pub topic_name: String,
-    handle: fn(T),
+    handle: fn(T, Option<R>),
     listener: Arc<Mutex<TcpStream>>,
     content: Option<T>
 }
 
-impl<T> Subscriber<T> where T: MessageTrait + DeserializeOwned + 'static {
-    pub fn new(topic_name: String, handle: fn(T)) -> Subscriber<T> {
+impl<T, R> Subscriber<T, R> where T: MessageTrait + DeserializeOwned + 'static, R: Send + 'static {
+    pub fn new(topic_name: String, handle: fn(T, Option<R>), mut argument: Option<R>) -> Subscriber<T, R> {
         let topic_name_clone = topic_name.clone();
 
         let subscriber = Subscriber {
@@ -46,10 +46,10 @@ impl<T> Subscriber<T> where T: MessageTrait + DeserializeOwned + 'static {
 
             loop {
                 let response = single_request_to_string(&mut stream.lock().unwrap());
-                let data: T = serde_json::from_str(response.as_str()).unwrap();
+                let data: T = serde_json::from_str(response.as_str()).expect("Wrong type provided");
 
                 if response.len() > 0 {
-                    (subscriber.handle)(data);
+                    (subscriber.handle)(data, argument.take());
                 }
                 else {
                     break;
