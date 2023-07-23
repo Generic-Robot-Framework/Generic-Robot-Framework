@@ -12,6 +12,7 @@ pub struct Subscriber<T, R> where T: MessageTrait + DeserializeOwned {
     pub topic_name: String,
     handle: fn(T, Option<R>),
     listener: Arc<Mutex<TcpStream>>,
+    #[allow(dead_code)]
     content: Option<T>
 }
 

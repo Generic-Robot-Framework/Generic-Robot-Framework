@@ -3,6 +3,7 @@ use std::io::Write;
 
 pub struct Topic {
     pub name: String,
+    pub message_type: Option<String>,
     pub subscribers: Vec<TcpStream>
 }
 
@@ -16,6 +17,7 @@ impl Clone for Topic {
 
         Topic {
             name: self.name.clone(),
+            message_type: self.message_type.clone(),
             subscribers,
         }
     }
