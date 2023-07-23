@@ -2,19 +2,6 @@ use std::fmt::{Debug, Display, Formatter};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct UnknownMessage();
-
-impl crate::traits::MessageTrait for UnknownMessage {
-
-}
-
-impl Display for UnknownMessage {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self)
-    }
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct StringMessage (String);
 
 impl Display for StringMessage {
