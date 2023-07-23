@@ -1,6 +1,6 @@
 [package]
 name = "generic_robot_framework"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "This crate allows you to manage publishers, subscribers and nodes in your Cargo packages. It is made to work with the Generic Robot Framework CLI."
 license = "MIT"
