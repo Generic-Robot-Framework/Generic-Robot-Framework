@@ -1,6 +1,7 @@
 use std::net::TcpStream;
 use std::io::Write;
 
+#[derive(Debug)]
 pub struct Topic {
     pub name: String,
     pub message_type: Option<String>,
@@ -24,9 +25,20 @@ impl Clone for Topic {
 }
 
 impl Topic {
-    pub fn write_to_subscribers(&self, buf: &[u8]) {
-        for mut subscriber in &self.subscribers {
-            subscriber.write_all(buf).unwrap();
+    pub fn write_to_subscribers(&mut self, buf: &[u8]) {
+        let mut streams_to_remove: Vec<usize> = vec![];
+
+        for (index, mut subscriber) in self.subscribers.iter().enumerate() {
+            match subscriber.write_all(buf) {
+                Ok(_) => {}
+                Err(_) => {
+                    streams_to_remove.push(index);
+                }
+            }
+        }
+
+        for stream in streams_to_remove {
+            let _ = &self.subscribers.remove(stream);
         }
     }
 }
