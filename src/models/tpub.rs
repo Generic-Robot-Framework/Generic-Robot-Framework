@@ -1,21 +1,21 @@
 use std::fmt::{Debug};
 use std::io::Write;
 use std::net::{Shutdown, TcpStream};
-use crate::models::message::Message;
+use crate::models::message::{get_message_type_as_str, Message};
 use crate::models::request::{message_to_http_request, OK_HTTP_STATUS, single_request_to_string};
 
 #[allow(dead_code)]
 #[derive(Debug)]
-pub struct Publisher<T> {
+pub struct Publisher<T> where T: crate::traits::MessageTrait {
     pub topic_name: String,
-    content: Option<T>
+    content: Option<T>,
 }
 
 
 impl<T> Publisher<T> where T: crate::traits::MessageTrait {
-    pub const fn new(topic_name: String) -> Publisher<T> {
+    pub fn new(topic_name: &str) -> Publisher<T> {
         Publisher {
-            topic_name,
+            topic_name: topic_name.to_string(),
             content: None,
         }
     }
@@ -26,7 +26,8 @@ impl<T> Publisher<T> where T: crate::traits::MessageTrait {
         let data = &Message {
             kind: String::from("pub"),
             topic: Some(self.topic_name.clone()),
-            message: Some(content)
+            message: Some(content),
+            message_type: get_message_type_as_str::<T>()
         };
 
         let request = message_to_http_request(data);

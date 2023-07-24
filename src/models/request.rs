@@ -18,7 +18,7 @@ pub fn single_request_to_string_vec(stream: &mut TcpStream) -> Vec<String> {
 pub fn single_request_to_string(stream: &mut TcpStream) -> String {
     let mut buf = vec![0u8; 1024];
     let mut handle = stream.try_clone().unwrap().take(1024);
-    handle.read(&mut buf).unwrap();
+    handle.read(&mut buf).expect("Connection was closed");
 
     String::from_utf8_lossy(&buf)
         .chars()
